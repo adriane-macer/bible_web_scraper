@@ -47,6 +47,7 @@ def start_scrapping(version_path, destination_base_path):
         print(book_part)
         book_name = tree.xpath("//tr[@class='{}']/td[@class='toggle-collapse2 book-name']/text()".format(b))[0]
         print("Book of {}...".format(book_name))
+
         num_of_chapters = tree.xpath("//tr[@class='{}']//span[@class='num-chapters collapse in']/text()".format(b))[0]
         print("Number of chapters: {}.".format(num_of_chapters))
         chapters = tree.xpath("//tr[@class='{}']/td[@class='chapters collapse']/a".format(b))
@@ -75,7 +76,7 @@ def start_scrapping(version_path, destination_base_path):
 
             time.sleep(10)
             current_chapter = current_chapter + 1
-            
+
 
 def scrape_verses(path, version_title, version_short, book, book_part, chapter, book_full_path):
     url = "{}{}".format(base_url, path)
@@ -96,6 +97,12 @@ def scrape_verses(path, version_title, version_short, book, book_part, chapter, 
 
     footnotes_texts = []
     alpha = "abcdefghijklmnopqrstuvwxyz"
+    alpha = [
+        "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",
+        "w", "x", "y", "z",
+        "aa", "ab", "ac", "ad", "ae", "af", "ag", "ah", "ai", "aj", "ak", "al", "am", "an", "ao", "ap", "aq", "ar",
+        "as", "at", "au", "av", "aw", "ax", "ay", "az",
+    ]
     for i in range(len(footnotes)):
         f_texts = tree.xpath("//li[@id='{}']/span[@class='footnote-text']/descendant-or-self::node()/text()"
                              .format(footnotes[i]))
@@ -117,7 +124,7 @@ def scrape_verses(path, version_title, version_short, book, book_part, chapter, 
                     verse=verse_text, delimiter=delimiter)
 
         # check if there is/ are footnotes
-        footnote_pattern = r'\[[a-z]\]'
+        footnote_pattern = r'\[[a-z]+\]'
         verse_footnotes = re.findall(footnote_pattern, verse_text)
 
         if len(verse_footnotes) > 0:
@@ -144,7 +151,7 @@ def scrape_verses(path, version_title, version_short, book, book_part, chapter, 
         try:
             with open(
                     book_full_path + "\\" + version_short + "_" + book + "_" + "chapter" + str(chapter) + ".txt",
-                    "w") as f:
+                    "w", encoding="utf-8") as f:
                 f.write(chapter_text)
         except UnicodeEncodeError as e:
             raise e

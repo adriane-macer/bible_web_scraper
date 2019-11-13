@@ -2,6 +2,8 @@ from lxml import html
 import requests
 import time
 import re
+from version_paths import version_paths
+import os
 
 base_url = "https://www.biblegateway.com"
 
@@ -15,7 +17,7 @@ def get_languages():
     return tree.xpath('//span[@class="language-display"]/text()')
 
 
-def start_scrapping(version_path):
+def start_scrapping(version_path, destination_base_path):
     # books
     url = "{}{}".format(base_url, version_path)
     page = requests.get(url)
@@ -23,8 +25,20 @@ def start_scrapping(version_path):
     title = version_path.split("/")[2].replace("-Bible", "").split("-")
     version_title = " ".join(title[:-1])
     version_short = title[-1]
+
+    version_folder = version_title + "_" + version_short
+    # Adding bible version folder
+    try:
+        os.makedirs(destination_base_path + "\\" + version_folder)
+        print("...{} directory created".format(version_folder))
+    except Exception as e:
+        print(e)
+        print("Error in creation of version directory")
+        if not str(e).find("file already exist"):
+            return
+
     print("Scrapping bible version: ")
-    print(title)
+    print(version_title, "-", version_short)
     print("...")
     books = tree.xpath('//tr[contains(@class,"-list")]')
     for book in books:
@@ -38,12 +52,26 @@ def start_scrapping(version_path):
         chapters = tree.xpath("//tr[@class='{}']/td[@class='chapters collapse']/a".format(b))
         current_chapter = 1
 
+        # adding book folder
+        book_folder = book_name
+        book_full_path = destination_base_path + "\\" + version_folder + "\\" + book_folder
+        try:
+            os.makedirs(book_full_path)
+            print("...{} directory created".format(book_folder))
+        except Exception as e:
+            print(e)
+            print("Error in creation of book directory")
+            if not str(e).find("file already exist"):
+                return
+
         for chapter in chapters:
             print("chapter {}...".format(current_chapter))
             chapter_path = chapter.get('href')
-            scrape_verses(chapter_path, version_title, version_short, book_name, book_part, current_chapter)
+            scrape_verses(chapter_path, version_title, version_short, book_name, book_part, current_chapter,
+                          book_full_path)
             time.sleep(10)
             current_chapter = current_chapter + 1
+            print("current_chapter = current_chapter + 1")
             # TODO cut to 2 chapters for testing only
             if current_chapter == 3:
                 break
@@ -52,7 +80,7 @@ def start_scrapping(version_path):
             break
 
 
-def scrape_verses(path, version_title, version_short, book, book_part, chapter):
+def scrape_verses(path, version_title, version_short, book, book_part, chapter, book_full_path):
     url = "{}{}".format(base_url, path)
     page = requests.get(url)
     tree = html.fromstring(page.content)
@@ -77,6 +105,8 @@ def scrape_verses(path, version_title, version_short, book, book_part, chapter):
         footnotes_texts.append("[{}] {}".format(alpha[i], " ".join(f_texts)))
 
     delimiter = "*"
+    # string for all verses of the chapter
+    chapter_text = ""
     for n in range(int(total_verses)):
         verse = tree \
             .xpath('//p[*]/span[@class="text {book_short}-{chapter}-{verse}"]/descendant-or-self::node()/text()'
@@ -84,16 +114,17 @@ def scrape_verses(path, version_title, version_short, book, book_part, chapter):
         verse_text = "".join(verse[1:])
 
         # add other details
-        verse_text = "{title}{delimiter}{short}{delimiter}{book}{delimiter}{part}{delimiter}{part_id}{delimiter}{chapter}{delimiter}{verse_num}{delimiter}{verse}" \
+        verse_complete = "{title}{delimiter}{short}{delimiter}{book}{delimiter}{part}{delimiter}{part_id}{delimiter}{chapter}{delimiter}{verse_num}{delimiter}{verse}" \
             .format(title=version_title, short=version_short, book=book, part=book_part,
                     part_id=book_part_ids[book_part], chapter=chapter, verse_num=n + 1,
                     verse=verse_text, delimiter=delimiter)
+
         # check if there is/ are footnotes
         footnote_pattern = r'\[[a-z]\]'
         verse_footnotes = re.findall(footnote_pattern, verse_text)
 
         if len(verse_footnotes) > 0:
-            verse_text = verse_text + delimiter
+            verse_complete = verse_complete + delimiter
             for verse_footnote in verse_footnotes:
                 matched_footnote = ""
                 for fn in footnotes_texts:
@@ -107,9 +138,16 @@ def scrape_verses(path, version_title, version_short, book, book_part, chapter):
                 if matched_footnote == "":
                     print("Verse {}. No footnote matched for {}".format(n + 1, verse_footnotes))
                 else:
-                    verse_text = verse_text + matched_footnote + ";"
+                    verse_complete = verse_complete + matched_footnote + ";"
 
-        print(verse_text)
+        verse_complete = verse_complete + "\n"
+
+        chapter_text = chapter_text + verse_complete
+
+        with open(
+                book_full_path + "\\" + version_short + "_" + book + "_" + "chapter" + str(chapter) + ".txt",
+                "w") as f:
+            f.write(chapter_text)
 
 
 def get_all_version_links():
@@ -119,12 +157,32 @@ def get_all_version_links():
 
 
 def run():
-    # destination = input("Enter destination folder:\n")
-    #
-    # version_path = input("Input bible version path:\n")
+    destination = ""
+    version_path = ""
 
-    version_path = "/versions/New-Revised-Standard-Version-NRSV-Bible/#booklist"
-    start_scrapping(version_path, )
+    is_valid_destination = False
+
+    while not is_valid_destination:
+        destination = input("Enter destination folder:\n")
+        if not os.path.exists(destination):
+            print("Directory you have entered is not valid.")
+        else:
+            if len(os.listdir(destination)) > 0:
+                print("The folder you have entered is not empty.")
+                print("Please choose empty location.")
+
+            is_valid_destination = True
+
+    is_valid_version_path = False
+
+    while not is_valid_version_path:
+        version_path = input("Input bible version path:\n")
+        if version_path not in version_paths:
+            print("not a valid version_path")
+        else:
+            is_valid_version_path = True
+
+    start_scrapping(version_path, destination)
 
 
 if __name__ == '__main__':

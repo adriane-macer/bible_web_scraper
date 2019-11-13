@@ -170,8 +170,8 @@ def run():
             if len(os.listdir(destination)) > 0:
                 print("The folder you have entered is not empty.")
                 print("Please choose empty location.")
-
-            is_valid_destination = True
+            else:
+                is_valid_destination = True
 
     is_valid_version_path = False
 
@@ -181,6 +181,11 @@ def run():
             print("not a valid version_path")
         else:
             is_valid_version_path = True
+
+    print("This process will take at least 3 hours.")
+    confirmed = input("Do you want to continue?\n enter N or n if cancel.\n otherwise will continue.")
+    if confirmed == "N" or confirmed == "n":
+        return
 
     start_scrapping(version_path, destination)
 

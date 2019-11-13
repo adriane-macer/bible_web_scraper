@@ -75,14 +75,7 @@ def start_scrapping(version_path, destination_base_path):
 
             time.sleep(10)
             current_chapter = current_chapter + 1
-            print("current_chapter = current_chapter + 1")
-            # TODO cut to 2 chapters for testing only
-            if current_chapter == 3:
-                break
-        # TODO Cut to book of joshua. testing only
-        if book_name == "Joshua" or book_name == "Proverbs":
-            break
-
+            
 
 def scrape_verses(path, version_title, version_short, book, book_part, chapter, book_full_path):
     url = "{}{}".format(base_url, path)

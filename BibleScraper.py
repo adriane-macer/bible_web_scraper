@@ -67,8 +67,12 @@ def start_scrapping(version_path, destination_base_path):
         for chapter in chapters:
             print("chapter {}...".format(current_chapter))
             chapter_path = chapter.get('href')
-            scrape_verses(chapter_path, version_title, version_short, book_name, book_part, current_chapter,
-                          book_full_path)
+            try:
+                scrape_verses(chapter_path, version_title, version_short, book_name, book_part, current_chapter,
+                              book_full_path)
+            except UnicodeEncodeError as e:
+                raise e
+
             time.sleep(10)
             current_chapter = current_chapter + 1
             print("current_chapter = current_chapter + 1")
@@ -144,10 +148,13 @@ def scrape_verses(path, version_title, version_short, book, book_part, chapter, 
 
         chapter_text = chapter_text + verse_complete
 
-        with open(
-                book_full_path + "\\" + version_short + "_" + book + "_" + "chapter" + str(chapter) + ".txt",
-                "w") as f:
-            f.write(chapter_text)
+        try:
+            with open(
+                    book_full_path + "\\" + version_short + "_" + book + "_" + "chapter" + str(chapter) + ".txt",
+                    "w") as f:
+                f.write(chapter_text)
+        except UnicodeEncodeError as e:
+            raise e
 
 
 def get_all_version_links():
@@ -187,7 +194,16 @@ def run():
     if confirmed == "N" or confirmed == "n":
         return
 
-    start_scrapping(version_path, destination)
+    try:
+        start_scrapping(version_path, destination)
+    except UnicodeEncodeError as e:
+        print(e)
+        print("Text format is not yet supported")
+        print("Choose other versions")
+        print("Process not completed")
+        return
+
+    print("Completed")
 
 
 if __name__ == '__main__':

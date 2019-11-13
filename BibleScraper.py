@@ -65,17 +65,38 @@ def start_scrapping(version_path, destination_base_path):
             if not str(e).find("file already exist"):
                 return
 
+        whole_book = ""
+
         for chapter in chapters:
             print("chapter {}...".format(current_chapter))
             chapter_path = chapter.get('href')
             try:
-                scrape_verses(chapter_path, version_title, version_short, book_name, book_part, current_chapter,
-                              book_full_path)
+                whole_book = whole_book + scrape_verses(chapter_path, version_title, version_short, book_name,
+                                                        book_part, current_chapter,
+                                                        book_full_path)
             except UnicodeEncodeError as e:
                 raise e
 
             time.sleep(10)
             current_chapter = current_chapter + 1
+
+        whole_book_path = book_full_path + "\\" + book_name + "_whole_book"
+        try:
+            os.makedirs(whole_book_path)
+            print("...{} directory created".format(book_folder + "_whole_book"))
+        except Exception as e:
+            print(e)
+            print("Error in creation of whole book directory")
+            if not str(e).find("file already exist"):
+                return
+
+        try:
+            with open(
+                    whole_book_path + "\\" + version_short + "_whole_" + book_name + ".txt",
+                    "w", encoding="utf-8") as f:
+                f.write(whole_book)
+        except UnicodeEncodeError as e:
+            raise e
 
 
 def scrape_verses(path, version_title, version_short, book, book_part, chapter, book_full_path):
@@ -88,15 +109,14 @@ def scrape_verses(path, version_title, version_short, book, book_part, chapter, 
     book_short = data_osis.split(".")[0]
     total_verses = data_osis.split(".")[-1]
     print(data_osis)
-    print(book_short)
-    print(total_verses)
+    # print(book_short)
+    # print(total_verses)
     footnotes_root = tree.xpath("//ol/li[@*]")
     footnotes = []
     for fNote in footnotes_root:
         footnotes.append(fNote.get("id"))
 
     footnotes_texts = []
-    alpha = "abcdefghijklmnopqrstuvwxyz"
     alpha = [
         "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",
         "w", "x", "y", "z",
@@ -155,6 +175,8 @@ def scrape_verses(path, version_title, version_short, book, book_part, chapter, 
                 f.write(chapter_text)
         except UnicodeEncodeError as e:
             raise e
+
+    return chapter_text
 
 
 def get_all_version_links():

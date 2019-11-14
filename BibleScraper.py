@@ -136,6 +136,10 @@ def scrape_verses(path, version_title, version_short, book, book_part, chapter, 
             .xpath('//p[*]/span[@class="text {book_short}-{chapter}-{verse}"]/descendant-or-self::node()/text()'
                    .format(book_short=book_short, chapter=chapter, verse=n + 1))
         verse_text = "".join(verse[1:])
+        verse_text_indents = tree \
+            .xpath('//span[@class="indent-1"]//span[@class="text {book_short}-{chapter}-{verse}"]/text()'
+                   .format(book_short=book_short, chapter=chapter, verse=n + 1))
+        verse_text = verse_text + " ".join(verse_text_indents)
 
         # add other details
         verse_complete = "{title}{delimiter}{short}{delimiter}{book}{delimiter}{part}{delimiter}{part_id}{delimiter}{chapter}{delimiter}{verse_num}{delimiter}{verse}" \

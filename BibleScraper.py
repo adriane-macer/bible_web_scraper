@@ -17,7 +17,7 @@ def get_languages():
     return tree.xpath('//span[@class="language-display"]/text()')
 
 
-def start_scrapping(version_path, destination_base_path):
+def start_scrapping(version_path, destination_base_path, is_skip_enable, starting_book):
     # books
     url = "{}{}".format(base_url, version_path)
     page = requests.get(url)
@@ -41,12 +41,22 @@ def start_scrapping(version_path, destination_base_path):
     print(version_title, "-", version_short)
     print("...")
     books = tree.xpath('//tr[contains(@class,"-list")]')
+    is_starting_book_reached = False
     for book in books:
         b: str = book.get('class')
         book_part = b.split(" ")[-1][:2]
-        print(book_part)
         book_name = tree.xpath("//tr[@class='{}']/td[@class='toggle-collapse2 book-name']/text()".format(b))[0]
+
+        if is_skip_enable:
+            if not is_starting_book_reached:
+                if book_name == starting_book:
+                    is_starting_book_reached = True
+                else:
+                    continue
+
+        print(book_part)
         print("Book of {}...".format(book_name))
+
 
         num_of_chapters = tree.xpath("//tr[@class='{}']//span[@class='num-chapters collapse in']/text()".format(b))[0]
         print("Number of chapters: {}.".format(num_of_chapters))
@@ -195,6 +205,9 @@ def run():
 
     is_valid_destination = False
 
+    starting_book = "Genesis"
+    is_skip_enable = False
+
     while not is_valid_destination:
         destination = input("Enter destination folder:\n")
         if not os.path.exists(destination):
@@ -220,8 +233,14 @@ def run():
     if confirmed == "N" or confirmed == "n":
         return
 
+    starting_book = input("If you wish to start to specific book, input starting book.\n Otherwise just press enter.\n"
+                          "Starting book: ")
+
+    if not starting_book == "":
+        is_skip_enable = True
+
     try:
-        start_scrapping(version_path, destination)
+        start_scrapping(version_path, destination, is_skip_enable, starting_book)
     except UnicodeEncodeError as e:
         print(e)
         print("Text format is not yet supported")

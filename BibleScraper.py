@@ -42,6 +42,7 @@ def start_scrapping(version_path, destination_base_path, is_skip_enable, startin
     print("...")
     books = tree.xpath('//tr[contains(@class,"-list")]')
     is_starting_book_reached = False
+    fetch_delay_reset_count = 1
     for book in books:
         b: str = book.get('class')
         book_part = b.split(" ")[-1][:2]
@@ -56,7 +57,6 @@ def start_scrapping(version_path, destination_base_path, is_skip_enable, startin
 
         print(book_part)
         print("Book of {}...".format(book_name))
-
 
         num_of_chapters = tree.xpath("//tr[@class='{}']//span[@class='num-chapters collapse in']/text()".format(b))[0]
         print("Number of chapters: {}.".format(num_of_chapters))
@@ -76,7 +76,6 @@ def start_scrapping(version_path, destination_base_path, is_skip_enable, startin
                 return
 
         whole_book = ""
-
         for chapter in chapters:
             print("chapter {}...".format(current_chapter))
             chapter_path = chapter.get('href')
@@ -87,13 +86,19 @@ def start_scrapping(version_path, destination_base_path, is_skip_enable, startin
             except UnicodeEncodeError as e:
                 raise e
 
-            time.sleep(10)
+            if fetch_delay_reset_count < 6:
+                time.sleep(1)
+                fetch_delay_reset_count = fetch_delay_reset_count + 1
+            else:
+                fetch_delay_reset_count = 1
+                time.sleep(10)
+
             current_chapter = current_chapter + 1
 
         whole_book_path = book_full_path + "\\" + book_name + "_whole_book"
         try:
             os.makedirs(whole_book_path)
-            print("...{} directory created".format(book_folder + "_whole_book"))
+            print("{} directory created".format(book_folder + "_whole_book"))
         except Exception as e:
             print(e)
             print("Error in creation of whole book directory")
@@ -105,6 +110,7 @@ def start_scrapping(version_path, destination_base_path, is_skip_enable, startin
                     whole_book_path + "\\" + version_short + "_whole_" + book_name + ".txt",
                     "w", encoding="utf-8") as f:
                 f.write(whole_book)
+                print("{} file created".format(version_short + "_whole_" + book_name + ".txt"))
         except UnicodeEncodeError as e:
             raise e
 
@@ -131,7 +137,10 @@ def scrape_verses(path, version_title, version_short, book, book_part, chapter, 
         "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",
         "w", "x", "y", "z",
         "aa", "ab", "ac", "ad", "ae", "af", "ag", "ah", "ai", "aj", "ak", "al", "am", "an", "ao", "ap", "aq", "ar",
-        "as", "at", "au", "av", "aw", "ax", "ay", "az",
+        "as", "at", "au", "av", "aw", "ax", "ay", "az", "ba", "bb", "bc", "bd", "be", "bf", "bg", "bh", "bi", "bj",
+        "bk", "bl", "bm",
+        "bn", "bo", "bp", "bq", "br", "bs", "bt", "bu", "bv",
+        "bw", "bx", "by", "bz",
     ]
     for i in range(len(footnotes)):
         f_texts = tree.xpath("//li[@id='{}']/span[@class='footnote-text']/descendant-or-self::node()/text()"

@@ -140,7 +140,9 @@ def scrape_verses(path, version_title, version_short, book, book_part, chapter, 
         "as", "at", "au", "av", "aw", "ax", "ay", "az", "ba", "bb", "bc", "bd", "be", "bf", "bg", "bh", "bi", "bj",
         "bk", "bl", "bm",
         "bn", "bo", "bp", "bq", "br", "bs", "bt", "bu", "bv",
-        "bw", "bx", "by", "bz",
+        "bw", "bx", "by", "bz", "ca", "cb", "cc", "cd", "ce", "cf", "cg", "ch", "ci", "cj", "ck", "cl", "cm", "cn",
+        "co", "cp", "cq", "cr", "cs", "ct", "cu", "cv",
+        "cw", "cx", "cy", "cz",
     ]
     for i in range(len(footnotes)):
         f_texts = tree.xpath("//li[@id='{}']/span[@class='footnote-text']/descendant-or-self::node()/text()"

@@ -143,6 +143,11 @@ def scrape_verses(path, version_title, version_short, book, book_part, chapter, 
         "bw", "bx", "by", "bz", "ca", "cb", "cc", "cd", "ce", "cf", "cg", "ch", "ci", "cj", "ck", "cl", "cm", "cn",
         "co", "cp", "cq", "cr", "cs", "ct", "cu", "cv",
         "cw", "cx", "cy", "cz",
+        "da", "db", "dc", "dd", "de", "df", "dg", "dh", "di", "dj", "dk", "dl", "dm", "dn", "do", "dp", "dq", "dr",
+        "ds", "dt", "du", "dv",
+        "dw", "dx", "dy", "dz",
+        "ea", "eb", "ec", "ed", "ee", "ef", "eg", "eh", "ei", "ej", "ek", "el", "em", "en", "eo", "ep", "eq", "er", "es", "et", "eu", "ev",
+        "ew", "ex", "ey", "ez",
     ]
     for i in range(len(footnotes)):
         f_texts = tree.xpath("//li[@id='{}']/span[@class='footnote-text']/descendant-or-self::node()/text()"
@@ -185,7 +190,7 @@ def scrape_verses(path, version_title, version_short, book, book_part, chapter, 
                         break
 
                 if matched_footnote == "":
-                    print("Verse {}. No footnote matched for {}".format(n + 1, verse_footnotes))
+                    print("Verse {}. No footnote matched for {}".format(n + 1, verse_footnote))
                 else:
                     verse_complete = verse_complete + matched_footnote + ";"
 

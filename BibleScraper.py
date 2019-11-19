@@ -43,11 +43,12 @@ def start_scrapping(version_path, destination_base_path, is_skip_enable, startin
     books = tree.xpath('//tr[contains(@class,"-list")]')
     is_starting_book_reached = False
     fetch_delay_reset_count = 1
+    book_sequence = []
     for book in books:
         b: str = book.get('class')
         book_part = b.split(" ")[-1][:2]
         book_name = tree.xpath("//tr[@class='{}']/td[@class='toggle-collapse2 book-name']/text()".format(b))[0]
-
+        book_sequence.append(book_name)
         if is_skip_enable:
             if not is_starting_book_reached:
                 if book_name == starting_book:
@@ -114,6 +115,15 @@ def start_scrapping(version_path, destination_base_path, is_skip_enable, startin
         except UnicodeEncodeError as e:
             raise e
 
+    try:
+        with open(
+                destination_base_path + "\\" + version_folder + "\\" + version_short + "_book_sequence.txt",
+                "w", encoding="utf-8") as f:
+            f.write("\n".join(book_sequence))
+            print("{} file created".format(version_short + "_book_sequence.txt"))
+    except UnicodeEncodeError as e:
+        raise e
+
 
 def scrape_verses(path, version_title, version_short, book, book_part, chapter, book_full_path):
     url = "{}{}".format(base_url, path)
@@ -146,7 +156,8 @@ def scrape_verses(path, version_title, version_short, book, book_part, chapter, 
         "da", "db", "dc", "dd", "de", "df", "dg", "dh", "di", "dj", "dk", "dl", "dm", "dn", "do", "dp", "dq", "dr",
         "ds", "dt", "du", "dv",
         "dw", "dx", "dy", "dz",
-        "ea", "eb", "ec", "ed", "ee", "ef", "eg", "eh", "ei", "ej", "ek", "el", "em", "en", "eo", "ep", "eq", "er", "es", "et", "eu", "ev",
+        "ea", "eb", "ec", "ed", "ee", "ef", "eg", "eh", "ei", "ej", "ek", "el", "em", "en", "eo", "ep", "eq", "er",
+        "es", "et", "eu", "ev",
         "ew", "ex", "ey", "ez",
     ]
     for i in range(len(footnotes)):

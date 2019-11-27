@@ -114,6 +114,7 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
         current_chapter = 1
 
         for l in chapters_links:
+            print("Chapter {}...".format(current_chapter))
             chapter_driver = webdriver.Chrome(chromedriver)
             chapter_driver.get(l)
             time.sleep(3)

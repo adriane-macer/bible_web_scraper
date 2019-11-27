@@ -60,6 +60,14 @@ version_links = (
     "https://www.bible.com/bible/1209/GEN.1.WMB",
     "https://www.bible.com/bible/1207/GEN.1.WMBBE",
     "https://www.bible.com/bible/821/GEN.1.YLT1898",
+    'https://www.bible.com/bible/2196/EXO.2.ABTAG',
+    'https://www.bible.com/bible/2195/EXO.2.ABTAG01',
+    'https://www.bible.com/bible/1264/EXO.2.ASND',
+    'https://www.bible.com/bible/144/EXO.2.MBB05',
+    'https://www.bible.com/bible/2197/EXO.2.MBBTAG12',
+    'https://www.bible.com/bible/399/EXO.2.RTPV05',
+    'https://www.bible.com/bible/177/EXO.2.TLAB',
+
 )
 
 
@@ -148,7 +156,7 @@ versions_map = {
     'https://www.bible.com/bible/37/GEN.1.CEB': ("Common English Bible", "CEB"),
     'https://www.bible.com/bible/392/GEN.1.CEV': ("Contemporary English Version", "CEV"),
     'https://www.bible.com/bible/303/GEN.1.CEVDCI': (
-    "Contemporary English Version Interconfessional Edition", "CEVDCI"),
+        "Contemporary English Version Interconfessional Edition", "CEVDCI"),
     'https://www.bible.com/bible/294/GEN.1.CEVUK': ("Contemporary English Version (Anglicised) 2012", "CEVUK"),
     'https://www.bible.com/bible/1275/GEN.1.CJB': ("Complete Jewish Bible", "CJB"),
     'https://www.bible.com/bible/42/GEN.1.CPDV': ("Catholic Public Domain Version", "CPDV"),
@@ -159,7 +167,7 @@ versions_map = {
     'https://www.bible.com/bible/406/GEN.1.ERV': (" Easy-to-Read Version", "ERV"),
     'https://www.bible.com/bible/59/GEN.1.ESV': ("English Standard Version", "ESV"),
     'https://www.bible.com/bible/1932/GEN.1.FBVNTPSALMS': (
-    "Free Bible Version New Testament with Psalms", "FBVNTPSALMS"),
+        "Free Bible Version New Testament with Psalms", "FBVNTPSALMS"),
     'https://www.bible.com/bible/296/GEN.1.GNB': ("Good News Bible", "GNB"),
     'https://www.bible.com/bible/416/GEN.1.GNBDC': ("Good News Bible (Anglicised)", "GNBDC"),
     'https://www.bible.com/bible/431/GEN.1.GNBDK': ("Good News Bible (Catholic edition in Septuagint order)", "GNBDK"),
@@ -190,7 +198,7 @@ versions_map = {
     'https://www.bible.com/bible/2135/GEN.1.NMV': ("New Messianic Version Bible", "NMV"),
     'https://www.bible.com/bible/2016/GEN.1.NRSV': ("New Revised Standard Version", "NRSV"),
     'https://www.bible.com/bible/2015/GEN.1.NRSV-CI': (
-    "New Revised Standard Version Catholic Interconfessional", "NRSV-CI"),
+        "New Revised Standard Version Catholic Interconfessional", "NRSV-CI"),
     'https://www.bible.com/bible/130/GEN.1.OJB': ("Orthodox Jewish Bible", "OJB"),
     'https://www.bible.com/bible/2020/GEN.1.RSV': ("Revised Standard Version", "RSV"),
     'https://www.bible.com/bible/2017/GEN.1.RSV-CI': ("Revised Standard Version", "RSV-CI"),
@@ -205,5 +213,12 @@ versions_map = {
     'https://www.bible.com/bible/1209/GEN.1.WMB': ("World Messianic Bible", "WMB"),
     'https://www.bible.com/bible/1207/GEN.1.WMBBE': ("World Messianic Bible British Edition", "WMBBE"),
     'https://www.bible.com/bible/821/GEN.1.YLT1898': ("Young's Literal Translation 3rd Revision 1898", "YLT1898"),
+    'https://www.bible.com/bible/2196/EXO.2.ABTAG': ("Ang Biblia (1905/1982)", "ABTAG"),
+    'https://www.bible.com/bible/2195/EXO.2.ABTAG01': ("Ang Biblia, 2001", "ABTAG01"),
+    'https://www.bible.com/bible/1264/EXO.2.ASND': ("Ang Salita ng Dios", "ASND"),
+    'https://www.bible.com/bible/144/EXO.2.MBB05': ("Magandang Balita Biblia (2005)", "MBB05"),
+    'https://www.bible.com/bible/2197/EXO.2.MBBTAG12': ("Magandang Balita Biblia", "MBBTAG12"),
+    'https://www.bible.com/bible/399/EXO.2.RTPV05': ("Magandang Balita Bible (Revised)", "RTPV05"),
+    'https://www.bible.com/bible/177/EXO.2.TLAB': ("Ang Biblia", "TLAB"),
 
 }

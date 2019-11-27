@@ -135,7 +135,7 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
                     [v.text for v in verse if v.get_attribute('class') and v.get_attribute('class') == 'content'])
 
                 verse_detail = version_title + delimiter + version_short + delimiter + book_name + delimiter + book_part + delimiter + book_part_id + delimiter + str(
-                    current_chapter) + delimiter + str(current_verse) + delimiter + verse_text
+                    current_chapter) + delimiter + str(current_verse) + delimiter + verse_text +"\n"
                 whole_book = whole_book + verse_detail
                 current_verse = current_verse + 1
 

@@ -213,7 +213,7 @@ versions_map = {
     'https://www.bible.com/bible/1209/GEN.1.WMB': ("World Messianic Bible", "WMB"),
     'https://www.bible.com/bible/1207/GEN.1.WMBBE': ("World Messianic Bible British Edition", "WMBBE"),
     'https://www.bible.com/bible/821/GEN.1.YLT1898': ("Young's Literal Translation 3rd Revision 1898", "YLT1898"),
-    'https://www.bible.com/bible/2196/EXO.2.ABTAG': ("Ang Biblia (1905/1982)", "ABTAG"),
+    'https://www.bible.com/bible/2196/EXO.2.ABTAG': ("Ang Biblia (1905-1982)", "ABTAG"),
     'https://www.bible.com/bible/2195/EXO.2.ABTAG01': ("Ang Biblia, 2001", "ABTAG01"),
     'https://www.bible.com/bible/1264/EXO.2.ASND': ("Ang Salita ng Dios", "ASND"),
     'https://www.bible.com/bible/144/EXO.2.MBB05': ("Magandang Balita Biblia (2005)", "MBB05"),

@@ -90,7 +90,6 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
     book_sequence = []
 
     for k, v in book_map.items():
-        print("scrapping book of {}...".format(v))
         time.sleep(3)
         book_select = driver.find_element_by_xpath("//li[@data-vars-event-label='{}']".format(k))
         book_part = ""  # no book part in bible.com
@@ -103,7 +102,10 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
                 if book_name == starting_book:
                     is_starting_book_reached = True
                 else:
+                    print("skipping book of {}".format(book_name))
                     continue
+
+        print("scrapping book of {}...".format(v))
 
         try:
             book_select.click()
@@ -119,13 +121,30 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
         book_folder = book_name
         book_full_path = destination_base_path + "\\" + version_folder + "\\" + book_folder
         try:
+            print("creating book of {} directory...".format(book_name))
             os.makedirs(book_full_path)
             print("...{} directory created".format(book_folder))
         except Exception as e:
-            print(e)
-            print("Error in creation of book directory")
             if not str(e).find("file already exist"):
+                print(e)
+                print("Error in creation of book directory")
                 return
+            else:
+                offset_book_num = 1
+                is_path_exist = True
+                while is_path_exist:
+                    offset_book_num = offset_book_num + 1
+                    offset_book_name = "{} {}".format(offset_book_num, book_name)
+                    offset_path = destination_base_path + "\\" + version_folder + "\\" + str(
+                        offset_book_num) + "_" + book_folder
+                    if not os.path.isdir(offset_path):
+                        is_path_exist = False
+                        book_name = offset_book_name
+                        book_folder = book_name
+
+                    book_full_path = destination_base_path + "\\" + version_folder + "\\" + book_folder
+                    os.makedirs(book_full_path)
+                    print("{} directory created".format(book_name))
 
         time.sleep(3)
         whole_book = ""
@@ -165,6 +184,7 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
 
         whole_book_path = book_full_path + "\\" + book_name + "_whole_book"
         try:
+            print("creating whole book directory...")
             os.makedirs(whole_book_path)
             print("{} directory created".format(book_folder + "_whole_book"))
         except Exception as e:

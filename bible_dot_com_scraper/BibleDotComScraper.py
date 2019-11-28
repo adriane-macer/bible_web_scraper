@@ -13,13 +13,52 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
     chromedriver = "C:\\Users\\Evangelista\\PycharmProjects\\webScraper\\venv\\chromedriver-Windows"
     os.environ["webdriver.chrome.driver"] = chromedriver
     driver = webdriver.Chrome(chromedriver)
-    driver.get(version_link)
+    try:
+        driver.get(version_link)
+    except Exception as e:
+        print("Invalid version link.")
+        driver.close()
+        return False
 
-    version_title = versions_map[version_link][0]
-    version_short = versions_map[version_link][1]
+    # check he version
+    try:
+        version_dropdown = driver.find_element_by_xpath(
+            "//div[@data-vars-event-category='Version Picker']//div[@class='tc pa2']")
+        version_dropdown.click()
+    except Exception as e:
+        print("Invalid version link.")
+        driver.close()
+        return False
+
+    time.sleep(3)
+    version_elements = driver.find_elements_by_xpath("//ul[@class='list ma0 pa0']/descendant::*")
+
+    version_title = ""
+    version_short = ""
+
+    for e in version_elements:
+        if e.get_attribute('href') == version_link:
+            link: str = e.get_attribute('href')
+            version_title = '"{}"'.format(str(e.get_attribute("data-vars-event-label")).split(":")[-1])
+            version_short = link.split(".")[-1]
+
+    #         link: str = e.get_attribute('href')
+    #         print("Version('{}',{},{}),".format(link,
+    #                                             '"{}"'.format(
+    #                                                 str(e.get_attribute("data-vars-event-label")).split(":")[-1]),
+    #                                             '"{}"'.format(link.split(".")[-1])))
+    #
+    #         print("'{}': ({},{}),".format(link,
+    #                                       '"{}"'.format(
+    #                                           str(e.get_attribute("data-vars-event-label")).split(":")[-1]),
+    #                                       '"{}"'.format(link.split(".")[-1])))
+
     title = version_title + " " + version_short
 
     version_folder = version_title + "_" + version_short
+
+    cancel_button = driver.find_element_by_xpath("//button[@data-vars-event-action='Cancel']")
+    cancel_button.click()
 
     # Adding bible version folder
     try:
@@ -34,25 +73,6 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
     print("Scrapping bible version: ")
     print(version_title, "-", version_short)
     print("...")
-
-    # version_dropdown = driver.find_element_by_xpath(
-    #     "//div[@data-vars-event-category='Version Picker']//div[@class='tc pa2']")
-    # version_dropdown.click()
-    # time.sleep(5)
-    # version_elements = driver.find_elements_by_xpath("//ul[@class='list ma0 pa0']/descendant::*")
-
-    # for e in version_elements:
-    #     if e.get_attribute('href'):
-    #         link: str = e.get_attribute('href')
-    #         print("Version('{}',{},{}),".format(link,
-    #                                             '"{}"'.format(
-    #                                                 str(e.get_attribute("data-vars-event-label")).split(":")[-1]),
-    #                                             '"{}"'.format(link.split(".")[-1])))
-    #
-    #         print("'{}': ({},{}),".format(link,
-    #                                       '"{}"'.format(
-    #                                           str(e.get_attribute("data-vars-event-label")).split(":")[-1]),
-    #                                       '"{}"'.format(link.split(".")[-1])))
 
     book_drop_down = driver.find_element_by_xpath("//div[@class='tc pa2']")
     book_drop_down.click()
@@ -135,7 +155,7 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
                     [v.text for v in verse if v.get_attribute('class') and v.get_attribute('class') == 'content'])
 
                 verse_detail = version_title + delimiter + version_short + delimiter + book_name + delimiter + book_part + delimiter + book_part_id + delimiter + str(
-                    current_chapter) + delimiter + str(current_verse) + delimiter + verse_text +"\n"
+                    current_chapter) + delimiter + str(current_verse) + delimiter + verse_text + "\n"
                 whole_book = whole_book + verse_detail
                 current_verse = current_verse + 1
 
@@ -164,7 +184,8 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
         back_button = driver.find_element_by_xpath("//button[@data-vars-event-action='Back']")
         back_button.click()
 
-    # driver.close()
+    driver.close()
+    return True
 
 
 def run():
@@ -189,12 +210,14 @@ def run():
 
     is_valid_version_link = False
 
-    while not is_valid_version_link:
-        version_link = input("Input bible version link:\n")
-        if version_link not in version_links:
-            print("not a valid version_link")
-        else:
-            is_valid_version_link = True
+    # while not is_valid_version_link:
+    #     version_link = input("Input bible version link:\n")
+    #     if version_link not in version_links:
+    #         print("not a valid version_link")
+    #     else:
+    #         is_valid_version_link = True
+
+    version_link = input("Input bible version link:\n")
 
     print("During scrapping, don't do anything from this computer.")
     print("The scrapping might be interrupted.")
@@ -215,7 +238,10 @@ def run():
     print("Scrapping started...")
 
     try:
-        start_scrapping(version_link, destination, is_skip_enable, starting_book)
+        result = start_scrapping(version_link, destination, is_skip_enable, starting_book)
+        if not result:
+            print("... exit with error.")
+            return
     except UnicodeEncodeError as e:
         print(e)
         print("Text format is not yet supported")

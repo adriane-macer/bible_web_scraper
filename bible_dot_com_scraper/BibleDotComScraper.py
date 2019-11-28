@@ -39,7 +39,7 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
     for e in version_elements:
         if e.get_attribute('href') == version_link:
             link: str = e.get_attribute('href')
-            version_title = '"{}"'.format(str(e.get_attribute("data-vars-event-label")).split(":")[-1])
+            version_title = '{}'.format(str(e.get_attribute("data-vars-event-label")).split(":")[-1])
             version_short = link.split(".")[-1]
 
     #         link: str = e.get_attribute('href')
@@ -126,6 +126,7 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
             print("Error in creation of book directory")
             if not str(e).find("file already exist"):
                 return
+
         time.sleep(3)
         whole_book = ""
         chapters_elements = driver.find_elements_by_xpath("//div[@class='bg-white min-vh-100']/descendant::*")

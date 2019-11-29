@@ -99,7 +99,7 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
 
         if is_skip_enable:
             if not is_starting_book_reached:
-                if book_name == starting_book:
+                if book_name.lower() == starting_book.lower():
                     is_starting_book_reached = True
                 else:
                     print("skipping book of {}".format(book_name))
@@ -117,6 +117,18 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
             time.sleep(3)
             book_select.click()
 
+        time.sleep(3)
+        whole_book = ""
+        chapters_elements = driver.find_elements_by_xpath("//div[@class='bg-white min-vh-100']/descendant::*")
+        chapters_links = [e.get_attribute('href') for e in chapters_elements if e.get_attribute('href') is not None]
+        num_of_chapters = len(chapters_links)
+        current_chapter = 1
+
+        book_short_name = str(chapters_links[0].split("/")[-1]).split(".")[0]
+        if book_short_name[0] == "1" or book_short_name[0] == '2' or book_short_name[0] == '3':
+            if book_name[0] != book_short_name[0]:
+                book_name = book_short_name[0] + " " + book_name
+
         # adding book folder
         book_folder = book_name
         book_full_path = destination_base_path + "\\" + version_folder + "\\" + book_folder
@@ -132,6 +144,7 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
             else:
                 offset_book_num = 1
                 is_path_exist = True
+                print("Appending prefix book number...")
                 while is_path_exist:
                     offset_book_num = offset_book_num + 1
                     offset_book_name = "{} {}".format(offset_book_num, book_name)
@@ -145,14 +158,7 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
                     book_full_path = destination_base_path + "\\" + version_folder + "\\" + book_folder
                     os.makedirs(book_full_path)
                     print("{} directory created".format(book_name))
-
-        time.sleep(3)
-        whole_book = ""
-        chapters_elements = driver.find_elements_by_xpath("//div[@class='bg-white min-vh-100']/descendant::*")
-        chapters_links = [e.get_attribute('href') for e in chapters_elements if e.get_attribute('href') is not None]
-        num_of_chapters = len(chapters_links)
-        current_chapter = 1
-
+        print("{} number of chapters...".format(num_of_chapters))
         for l in chapters_links:
             print("Chapter {}...".format(current_chapter))
             chapter_driver = webdriver.Chrome(chromedriver)
@@ -174,14 +180,14 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
                 verse_text = " ".join(
                     [v.text for v in verse if v.get_attribute('class') and v.get_attribute('class') == 'content'])
 
-                verse_detail = version_title + delimiter + version_short + delimiter + book_name + delimiter + book_part + delimiter + book_part_id + delimiter + str(
+                verse_detail = version_title + delimiter + version_short + delimiter + book_name + delimiter + book_short_name + delimiter + book_part + delimiter + book_part_id + delimiter + str(
                     current_chapter) + delimiter + str(current_verse) + delimiter + verse_text + "\n"
                 whole_book = whole_book + verse_detail
                 current_verse = current_verse + 1
 
             chapter_driver.close()
             current_chapter = current_chapter + 1
-
+            
         whole_book_path = book_full_path + "\\" + book_name + "_whole_book"
         try:
             print("creating whole book directory...")

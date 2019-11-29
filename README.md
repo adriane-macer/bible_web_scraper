@@ -17,6 +17,7 @@ This python script used  to get the bible of a particular version of the bible f
     - Bible version<br>
     - Bible version abbreviation<br>
     - Book name<br>
+    - Book short name (e.g. GEN ) for bible.com only as of now <br>
     - Book part name (e.g. ot for Old Testament)<br>
     - Book part id (e.g. 1 for ot)<br>
     - Book chapter<br>

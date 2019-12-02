@@ -20,13 +20,13 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
         driver.close()
         return False
 
-    # check he version
+    # check the version
     try:
         version_dropdown = driver.find_element_by_xpath(
             "//div[@data-vars-event-category='Version Picker']//div[@class='tc pa2']")
         version_dropdown.click()
     except Exception as e:
-        print("Invalid version link.")
+        print("No connection or Invalid version link.")
         driver.close()
         return False
 
@@ -60,6 +60,25 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
     cancel_button = driver.find_element_by_xpath("//button[@data-vars-event-action='Cancel']")
     cancel_button.click()
 
+    # selecting of version
+    book_drop_down = driver.find_element_by_xpath("//div[@class='tc pa2']")
+    book_drop_down.click()
+
+    time.sleep(3)
+    book_elements = driver.find_elements_by_xpath("//ul[@class='list ma0 pa0 bg-white pb5 min-vh-100']/*")
+    if len(book_elements) == 0:
+        print("Network interrupted. please try again.")
+        return False
+
+    book_map = {}
+
+    for e in book_elements:
+        book_map[e.get_attribute('data-vars-event-label')] = e.text
+
+    is_starting_book_reached = False
+    fetch_delay_reset_count = 1
+    book_sequence = []
+
     # Adding bible version folder
     try:
         os.makedirs(destination_base_path + "\\" + version_folder)
@@ -73,21 +92,6 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
     print("Scrapping bible version: ")
     print(version_title, "-", version_short)
     print("...")
-
-    book_drop_down = driver.find_element_by_xpath("//div[@class='tc pa2']")
-    book_drop_down.click()
-
-    time.sleep(3)
-    book_elements = driver.find_elements_by_xpath("//ul[@class='list ma0 pa0 bg-white pb5 min-vh-100']/*")
-
-    book_map = {}
-
-    for e in book_elements:
-        book_map[e.get_attribute('data-vars-event-label')] = e.text
-
-    is_starting_book_reached = False
-    fetch_delay_reset_count = 1
-    book_sequence = []
 
     for k, v in book_map.items():
         time.sleep(3)
@@ -122,6 +126,10 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
         chapters_elements = driver.find_elements_by_xpath("//div[@class='bg-white min-vh-100']/descendant::*")
         chapters_links = [e.get_attribute('href') for e in chapters_elements if e.get_attribute('href') is not None]
         num_of_chapters = len(chapters_links)
+        if num_of_chapters == 0:
+            print("Network interrupted. Please try again")
+            return False
+
         current_chapter = 1
 
         book_short_name = str(chapters_links[0].split("/")[-1]).split(".")[0]
@@ -170,6 +178,23 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
                 if verse.get_attribute('class') not in verses:
                     verses.append(verse.get_attribute('class'))
 
+            if len(verses) == 0:
+                retry_count = 0
+                while len(verses) == 0:
+                    time.sleep(1)
+                    retry_count = retry_count + 1
+                    print("retrying...")
+                    print("{} retries...".format(retry_count))
+                    verses_elements = chapter_driver.find_elements_by_xpath("//span[contains(@class,'verse v')]")
+
+                    for verse in verses_elements:
+                        if verse.get_attribute('class') not in verses:
+                            verses.append(verse.get_attribute('class'))
+
+                    if retry_count == 3:
+                        print("Too many attempts. Please check your connection and try again.")
+                        return False
+
             print(len(verses), "number of verses...")
             current_verse = 1
             footnotes = ""
@@ -187,7 +212,7 @@ def start_scrapping(version_link, destination_base_path, is_skip_enable, startin
 
             chapter_driver.close()
             current_chapter = current_chapter + 1
-            
+
         whole_book_path = book_full_path + "\\" + book_name + "_whole_book"
         try:
             print("creating whole book directory...")
